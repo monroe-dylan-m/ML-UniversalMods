@@ -16,6 +16,7 @@ namespace RuntimeGraphicsSettings
             var rtShadows = category.CreateEntry("RealtimeShadows", true, "Realtime shadows");
             var softShadows = category.CreateEntry("SoftShadows", true, "Soft shadows");
             var shadowDistance = category.CreateEntry("ShadowDistance", -1.0f, "Shadow distance");
+            var distanceShadowmask = category.CreateEntry("DistanceShadowmask", true, "Distance shadowmask");
             var maxPixelLights = category.CreateEntry("PixelLights", -1, "Max pixel lights");
             var textureDecimation = category.CreateEntry("MasterTextureLimit", -1, "Texture decimation");
             var graphicsTier = category.CreateEntry("GraphicsTier", -1, "Graphics tier (1/2/3)");
@@ -58,9 +59,9 @@ namespace RuntimeGraphicsSettings
 
             void UpdateShadowDistance()
             {
-                if (!float.IsNaN(shadowDistance.Value) &&
-                    !float.IsInfinity(shadowDistance.Value) &&
-                    shadowDistance.Value >= 0.0f)
+                if (!float.IsNaN(shadowDistance.Value)
+                    && !float.IsInfinity(shadowDistance.Value)
+                    && shadowDistance.Value >= 0.0f)
                 {
                     QualitySettings.shadowDistance = shadowDistance.Value;
                 }
@@ -69,6 +70,17 @@ namespace RuntimeGraphicsSettings
             shadowDistance.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateShadowDistance());
 
             UpdateShadowDistance();
+
+            void UpdateDistanceShadowmask()
+            {
+                QualitySettings.shadowmaskMode = distanceShadowmask.Value
+                    ? ShadowmaskMode.DistanceShadowmask
+                    : ShadowmaskMode.Shadowmask;
+            }
+
+            distanceShadowmask.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateDistanceShadowmask());
+
+            UpdateDistanceShadowmask();
 
             void UpdateMsaa()
             {
