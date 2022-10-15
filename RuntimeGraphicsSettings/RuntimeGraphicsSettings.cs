@@ -15,6 +15,7 @@ namespace RuntimeGraphicsSettings
             var anisoFilter = category.CreateEntry("AnisotropicFiltering", true, "Enable anisotropic filtering");
             var rtShadows = category.CreateEntry("RealtimeShadows", true, "Realtime shadows");
             var softShadows = category.CreateEntry("SoftShadows", true, "Soft shadows");
+            var shadowDistance = category.CreateEntry("ShadowDistance", -1.0f, "Shadow distance");
             var maxPixelLights = category.CreateEntry("PixelLights", -1, "Max pixel lights");
             var textureDecimation = category.CreateEntry("MasterTextureLimit", -1, "Texture decimation");
             var graphicsTier = category.CreateEntry("GraphicsTier", -1, "Graphics tier (1/2/3)");
@@ -54,6 +55,20 @@ namespace RuntimeGraphicsSettings
             softShadows.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateShadows());
 
             UpdateShadows();
+
+            void UpdateShadowDistance()
+            {
+                if (!float.IsNaN(shadowDistance.Value) &&
+                    !float.IsInfinity(shadowDistance.Value) &&
+                    shadowDistance.Value >= 0.0f)
+                {
+                    QualitySettings.shadowDistance = shadowDistance.Value;
+                }
+            }
+
+            shadowDistance.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateShadowDistance());
+
+            UpdateShadowDistance();
 
             void UpdateMsaa()
             {
