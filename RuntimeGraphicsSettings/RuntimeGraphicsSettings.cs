@@ -19,29 +19,28 @@ namespace RuntimeGraphicsSettings
             var textureDecimation = category.CreateEntry("MasterTextureLimit", -1, "Texture decimation");
             var graphicsTier = category.CreateEntry("GraphicsTier", -1, "Graphics tier (1/2/3)");
 
-
-            anisoFilter.OnValueChanged += (_, value) =>
+            anisoFilter.OnEntryValueChanged.Subscribe((_, value) =>
             {
                 QualitySettings.anisotropicFiltering = value ? AnisotropicFiltering.ForceEnable : AnisotropicFiltering.Disable;
-            };
+            });
             QualitySettings.anisotropicFiltering = anisoFilter.Value ? AnisotropicFiltering.ForceEnable : AnisotropicFiltering.Disable;
 
-            textureDecimation.OnValueChanged += (_, value) =>
+            textureDecimation.OnEntryValueChanged.Subscribe((_, value) =>
             {
                 if (value >= 0) QualitySettings.masterTextureLimit = value;
-            };
+            });
             if (textureDecimation.Value >= 0) QualitySettings.masterTextureLimit = textureDecimation.Value;
 
-            maxPixelLights.OnValueChanged += (_, value) =>
+            maxPixelLights.OnEntryValueChanged.Subscribe((_, value) =>
             {
                 if (value >= 0) QualitySettings.pixelLightCount = value;
-            };
+            });
             if (maxPixelLights.Value >= 0) QualitySettings.pixelLightCount = maxPixelLights.Value;
 
-            graphicsTier.OnValueChanged += (_, value) =>
+            graphicsTier.OnEntryValueChanged.Subscribe((_, value) =>
             {
                 if (value > 0) Graphics.activeTier = (GraphicsTier)(value - 1);
-            };
+            });
             if (graphicsTier.Value > 0) Graphics.activeTier = (GraphicsTier)(graphicsTier.Value - 1);
 
             void UpdateShadows()
@@ -50,11 +49,11 @@ namespace RuntimeGraphicsSettings
                     ? softShadows.Value ? ShadowQuality.All : ShadowQuality.HardOnly
                     : ShadowQuality.Disable;
             }
-            
-            UpdateShadows();
 
-            rtShadows.OnValueChangedUntyped += UpdateShadows;
-            softShadows.OnValueChangedUntyped += UpdateShadows;
+            rtShadows.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateShadows());
+            softShadows.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateShadows());
+
+            UpdateShadows();
 
             void UpdateMsaa()
             {
@@ -67,8 +66,9 @@ namespace RuntimeGraphicsSettings
                     QualitySettings.antiAliasing = 1;
             }
 
-            msaaLevel.OnValueChangedUntyped += UpdateMsaa;
-            allowMsaa.OnValueChangedUntyped += UpdateMsaa;
+            msaaLevel.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateMsaa());
+            allowMsaa.OnEntryValueChangedUntyped.Subscribe((_, __) => UpdateMsaa());
+
             UpdateMsaa();
         }
     }
